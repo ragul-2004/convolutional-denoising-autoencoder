@@ -1,38 +1,52 @@
-Convolutional Autoencoder for Image Denoising
-AIM:
+
+# Convolutional Autoencoder for Image Denoising
+
+## AIM:
+
 To develop a convolutional autoencoder for image denoising application.
 
-Problem Statement and Dataset:
-Autoencoder is an unsupervised artificial neural network that is trained to copy its input to output.
-An autoencoder will first encode the image into a lower-dimensional representation, then decodes the representation back to the image.
-The goal of an autoencoder is to get an output that is identical to the input. Autoencoders uses MaxPooling, convolutional and upsampling layers to denoise the image.
-We are using MNIST Dataset for this experiment.
-The MNIST dataset is a collection of handwritten digits.
-The task is to classify a given image of a handwritten digit into one of 10 classes representing integer values from 0 to 9, inclusively.
-The dataset has a collection of 60,000 handwrittend digits of size 28 X 28.
-Here we build a convolutional neural network model that is able to classify to it's appropriate numerical value.
+## Problem Statement and Dataset:
+
+- Autoencoder is an unsupervised artificial neural network that is trained to copy its input to output.
+- An autoencoder will first encode the image into a lower-dimensional representation, then decodes the representation back to the image.
+- The goal of an autoencoder is to get an output that is identical to the input. Autoencoders uses MaxPooling, convolutional and upsampling layers to denoise the image.
+- We are using MNIST Dataset for this experiment.
+- The MNIST dataset is a collection of handwritten digits.
+- The task is to classify a given image of a handwritten digit into one of 10 classes representing integer values from 0 to 9, inclusively.
+- The dataset has a collection of 60,000 handwrittend digits of size 28 X 28.
+- Here we build a convolutional neural network model that is able to classify to it's appropriate numerical value.
+
+![](./mnist.png)
+<br>
 
 
-Convolution Autoencoder Network Model:
+## Convolution Autoencoder Network Model:
 
 
-DESIGN STEPS
-Step 1: Import the necessary libraries and dataset.
-Step 2: Load the dataset and scale the values for easier computation.
-Step 3: Add noise to the images randomly for both the train and test sets.
-Step 4: Build the Neural Model using
-Convolutional Layer
-Pooling Layer
-Up Sampling Layer.
-Make sure the input shape and output shape of the model are identical.
-Step 5: Pass test data for validating manually.
-Step 6: Plot the predictions for visualization.
-PROGRAM
-Developed by: Ragul A C
-Register no: 212221240042
+![](./cnm.png)
 
-Import necessary libraries
 
+
+## DESIGN STEPS
+
+- **Step 1:** Import the necessary libraries and dataset.
+- **Step 2:**  Load the dataset and scale the values for easier computation.
+- **Step 3:** Add noise to the images randomly for both the train and test sets.
+- **Step 4:** Build the Neural Model using
+    * Convolutional Layer
+    * Pooling Layer
+    * Up Sampling Layer.
+    - Make sure the input shape and output shape of the model are identical.
+- **Step 5:** Pass test data for validating manually.
+- **Step 6:** Plot the predictions for visualization.
+
+
+## PROGRAM
+> Developed by: Ragul A C<br>
+> Register no: 212221240042
+
+**Import necessary libraries**
+```python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,8 +54,10 @@ import matplotlib.pyplot as plt
 from tensorflow import keras
 from tensorflow.keras import layers, utils, models
 from tensorflow.keras.datasets import mnist
-Read the dataset and scale it
+```
 
+**Read the dataset and scale it**
+```python
 (x_train, _), (x_test, _) = mnist.load_data()
 
 x_train.shape
@@ -51,8 +67,10 @@ x_test_scaled = x_test.astype('float32') / 255.
 
 x_train_scaled = np.reshape(x_train_scaled, (len(x_train_scaled), 28, 28, 1))
 x_test_scaled = np.reshape(x_test_scaled, (len(x_test_scaled), 28, 28, 1))
-Add noise to image
+```
 
+**Add noise to image**
+```python
 noise_factor = 0.5
 x_train_noisy = x_train_scaled + noise_factor*np.random.normal(loc=0.0, scale=1.0,
                                                                size=x_train_scaled.shape)
@@ -61,8 +79,10 @@ x_test_noisy = x_test_scaled + noise_factor*np.random.normal(loc=0.0, scale=1.0,
 
 x_train_noisy = np.clip(x_train_noisy, 0., 1.)
 x_test_noisy = np.clip(x_test_noisy, 0., 1.)
-Plot the images
+```
 
+**Plot the images**
+```python
 n = 10
 plt.figure(figsize=(20, 2))
 for i in range(1, n + 1):
@@ -72,8 +92,10 @@ for i in range(1, n + 1):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 plt.show()
-Develop an Autoencoder DL Model
+```
 
+**Develop an Autoencoder DL Model**
+```python
 input_img = keras.Input(shape=(28, 28, 1))
 
 x=layers.Conv2D(16,(5,5),activation='relu',padding='same')(input_img)
@@ -100,8 +122,10 @@ decoded = layers.Conv2D(1, (3, 3), activation='sigmoid', padding='same')(x)
 autoencoder = keras.Model(input_img, decoded)
 
 autoencoder.summary()
-Compile and Fit the model
+```
 
+**Compile and Fit the model**
+```python
 autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
 
 autoencoder.fit(x_train_noisy, x_train_scaled,
@@ -109,15 +133,21 @@ autoencoder.fit(x_train_noisy, x_train_scaled,
                 batch_size=256,
                 shuffle=True,
                 validation_data=(x_test_noisy, x_test_scaled))
-Plot Metrics Graph
+```
 
+**Plot Metrics Graph**
+```python
 metrics = pd.DataFrame(autoencoder.history.history)
 metrics[['loss','val_loss']].plot()
-Predict Using the model
+```
 
+**Predict Using the model**
+```python
 decoded_imgs = autoencoder.predict(x_test_noisy)
-Plot the original, noisy & reconstructed images
+```
 
+**Plot the original, noisy & reconstructed images**
+```python
 n = 10
 plt.figure(figsize=(20, 4))
 for i in range(1, n + 1):
@@ -142,14 +172,24 @@ for i in range(1, n + 1):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 plt.show()
-OUTPUT
-Training Loss, Validation Loss Vs Iteration Plot:
-![ex7 1](https://github.com/ragul-2004/convolutional-denoising-autoencoder/assets/94367917/43d9b4b4-0ae2-4bd2-808b-d1f3cd5bc20a)
+```
 
 
-Original vs Noisy Vs Reconstructed Image:
-![Screenshot 2024-05-05 201808](https://github.com/ragul-2004/convolutional-denoising-autoencoder/assets/94367917/4559a51d-d4b3-4d82-81dc-469ca9777917)
+## OUTPUT
+
+### Training Loss, Validation Loss Vs Iteration Plot:
+![ex7 1](https://github.com/ragul-2004/convolutional-denoising-autoencoder/assets/94367917/4a23d6f6-088b-4d10-8eea-dd2a9c776748)
 
 
-RESULT
+
+
+### Original vs Noisy Vs Reconstructed Image:
+![Screenshot 2024-05-05 201808](https://github.com/ragul-2004/convolutional-denoising-autoencoder/assets/94367917/935a4fad-9a59-43f7-9c78-1a63c157e46b)
+
+
+
+
+
+
+## RESULT
 Thus we have successfully developed a convolutional autoencoder for image denoising application.
